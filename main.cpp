@@ -9,10 +9,12 @@
 #include "main.h"
 using namespace std;
 
-Node::Node(int lon, int lat, string name){
+Node::Node(int lon, int lat, string name, vector <Node*> neighbors, vector <double> distances){
 	this->lon=lon;
 	this->lat=lat;
 	this->name = name;
+    this->neighbors=neighbors;
+    this->distances=distances;
 }
 
 string Node::getName(){
@@ -27,6 +29,21 @@ double Node::getLat(){
 	return this->lat;
 }
 
+vector <Node*> Node::getNeighbors(){
+    return this->neighbors;
+}
+
+void Node::pushNeighbors(Node* neighbor){
+    this->neighbors.push_back(neighbor);
+}
+
+vector <double> Node::getDistances(){
+    return this->distances;
+}
+
+void Node::pushDistances(double distance){
+    this->distances.push_back(distance);
+}
 
 vector<string> createTokens(string s){
 //    std::cout<<s<<endl;
@@ -60,11 +77,31 @@ vector<string> createTokens(string s){
     return lineVector;
 }
 
+//checks to see if a string matches the name of a node in the locations vector, changed the value of index to the index where a match is found
+bool locationNameExists(string checkCase, vector <Node*> locations, int & index){
+    for(int i=0; i<locations.size(); i++){
+        if(checkCase==locations[i]->getName())
+            index = i;
+            return true;
+    }
+    return false;
+}
+//checks to see if a string matches the name of a node in the locations vector
+bool locationNameExists(string checkCase, vector <Node*> locations){
+    for(int i=0; i<locations.size(); i++){
+        if(checkCase==locations[i]->getName())
+            return true;
+    }
+    return false;
+}
+
 int main(){
     vector <Node*> locations;//vector of node locations
     vector <string> temp;
     vector <string> token;
     vector <vector <int> > adjMatrix;
+    vector <Node*> neighborsPassToNode;
+    vector <double> distancesPassToNode;
     int lines = 0;
     string filename = "map.txt";
 
@@ -98,7 +135,7 @@ int main(){
     	lat= atof(token[iter].c_str());
     	if(i!=lines)
     		iter++;
-    	locations.push_back(new Node(lon, lat, name));
+    	locations.push_back(new Node(lon, lat, name, neighborsPassToNode, distancesPassToNode));
     }
     //prints out to test the Node locations vector
     /*for(int i= 0; i<locations.size(); i++){
@@ -141,20 +178,42 @@ int main(){
         }
     cout<<endl;  
     }*/
+
+for(int i = 0; i < lines; i++){
+    
+    for(int j = 0; j<lines; j++){
+        if(adjMatrix[i][j]==1){
+            locations[i]->pushNeighbors(locations[j]);
+            locations[i]->pushDistances(getDist(locations[i], locations[j]));
+        }
+
+    }
+
+}
+//prints neighbors
+/*for(int i=0;i<lines;i++)  
+    {
+        for(int j=0;j<locations[i]->getNeighbors().size();j++)  
+        {
+            cout<<locations[i]->getNeighbors()[j]->getName(); 
+        } 
+    }
+*/
+
 int choice;
 while(choice!=4){
 cout<<"\n--------------------Choices--------------------\n";
 cout<<"1. Directions\n";
 cout<<"2. Add Location\n";
 cout<<"3. Print Locations\n";
-cout<<"4. Exit\n";
+cout<<"4. Exit\n\n";
 cin >> choice;
 bool fail = cin.fail();
 if(choice > 4 || choice < 1)
                 fail = true;
             //validates the user input for being both an integer and in the range of valid input
     while(fail){
-        cout<<"Invalid input, please input a whole number between 1 and 2.\n";
+        cout<<"Invalid input, please input a whole number between 1 and 4.\n";
          cin.clear();
          cin.ignore(10000, '\n');
          cin>>choice;
@@ -167,26 +226,49 @@ if(choice > 4 || choice < 1)
                     }
                 }
             }
+
 if(choice==1){
     cout<<"Not yet implemented.\n";
 }
+
 else if(choice==2){
-        //creates a new node
         double lon;
         double lat;
         string newName;
+        int neighborChoice;
+        string neighName;
+        int neighIndex;
         cout << "Enter Longtitude.\n";
         cin >> lon;
         cout << "Enter Latitude.\n";
         cin >> lat;
         cout << "Enter location name.\n";
         cin >> newName;
-        locations.push_back(new Node(lon, lat, newName));
+        while(locationNameExists(newName, locations)){
+            cout << "Location name already exists. Please enter a different name.\n";
+            cin >> newName;
+        }
+        cout << "Enter the number of neighbors.\n";
+        cin >> neighborChoice;
+        while(neighborChoice>0){
+            cout << "Enter neighbor name.\n";
+            cin >> neighName;
+            while(!locationNameExists(neighName, locations, neighIndex)){
+                cout << "Neighbor name does not exist, please check spelling and list of neighbors and try again.\n";
+                cin >> neighName;    
+            }
+            neighborsPassToNode.push_back(locations[neighIndex]);
+            distancesPassToNode.push_back(getDist(lon, lat, locations[neighIndex]));
+            neighborChoice--;
+        }
+        
+        locations.push_back(new Node(lon, lat, newName, neighborsPassToNode, distancesPassToNode));
+        neighborsPassToNode.clear();
+        distancesPassToNode.clear();
         cout<<"\nLocation Added\n\n";
 
     }
 else if(choice==3){
-//prints locations
 for (int i = 0; i < locations.size(); ++i)
 {
     cout<< "\nName: "<< locations[i]->getName() << " Longtitude: " <<locations[i]->getLon() << " Latitude: "<< locations[i]->getLat();
