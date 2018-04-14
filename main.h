@@ -1,7 +1,7 @@
 #include <string>
 #include <math.h>
-#define PI 3.14159265
-
+#include <cmath>
+#define earthRadiusKm 6371.0
 using namespace std;
 
 class Node{
@@ -21,31 +21,33 @@ public:
 	vector <double> getDistances();
 	void pushNeighbors(Node* neighbor);
 	void pushDistances(double distance);
-	Node(int lon, int lat, string name, vector <Node*> neighbors, vector <double> distances);
+	Node(double lon, double lat, string name, vector <Node*> neighbors, vector <double> distances);
 };
 
-double getDist(Node* firstNode,Node* secondNode){
-  
-  	double deltaLat = firstNode->getLat() - secondNode->getLat();
-  	double deltaLon = firstNode->getLon() - secondNode->getLon();
-  	//haversine formula
-  	double a = sin(deltaLat*PI/360)*sin(deltaLat*PI/360) + cos(firstNode->getLat()) * cos(secondNode->getLat()) * sin(deltaLon*PI/360)*sin(deltaLon*PI/360);
-  	double c = 2 * atan2(sqrt(a),sqrt(1-a));
-  	double d = c * 6371000;
-    return d;
+double deg2rad(double deg) {
+  return (deg * M_PI / 180);
+}
+
+double getDist(double lat1d, double lon1d, double lat2d, double lon2d){
+
+  	double lat1r, lon1r, lat2r, lon2r, u, v;
+  lat1r = deg2rad(lat1d);
+  lon1r = deg2rad(lon1d);
+  lat2r = deg2rad(lat2d);
+  lon2r = deg2rad(lon2d);
+  u = sin((lat2r - lat1r)/2);
+  v = sin((lon2r - lon1r)/2);
+  return 2.0 * earthRadiusKm * asin(sqrt(u * u + cos(lat1r) * cos(lat2r) * v * v));
 }
 
 double getDist(double lonOne, double latOne, Node* secondNode){
-	double deltaLat = latOne - secondNode->getLat();
-  	double deltaLon = lonOne - secondNode->getLon();
-  	//haversine formula
-  	double a = sin(deltaLat*PI/360)*sin(deltaLat*PI/360) + cos(latOne) * cos(secondNode->getLat()) * sin(deltaLon*PI/360)*sin(deltaLon*PI/360);
-  	double c = 2 * atan2(sqrt(a),sqrt(1-a));
-  	double d = c * 6371000;
-    return d;
-}
+	double lat1r, lon1r, lat2r, lon2r, u, v;
+	lat1r = latOne * M_PI/180;
+	lon1r = lonOne * M_PI/180;
+	lat2r = secondNode->getLat() * M_PI/180;
+	lon2r = secondNode->getLon() * M_PI/180;
+  	u = sin((lat2r - lat1r)/2);
+  	v = sin((lon2r - lon1r)/2);
+  return 2.0 * earthRadiusKm * asin(sqrt(u * u + cos(lat1r) * cos(lat2r) * v * v));
 
-/*void PrintMenu(*Node [] locations);
-void addNodeLocation(string name, int x, int y);
-string [] Dijkstra(*Node [] locations);
-*/
+}
