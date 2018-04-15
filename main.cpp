@@ -6,6 +6,7 @@
 #include<vector>
 #include <sstream>
 #include <cmath>
+#include <map>
 #include <stdlib.h> //needed for atof -> convert string to double
 #include "main.h"
 using namespace std;
