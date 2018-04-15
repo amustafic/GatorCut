@@ -4,6 +4,8 @@
 #define earthRadiusKm 6371.0
 using namespace std;
 
+
+
 class Node{
 
 private:
@@ -27,6 +29,21 @@ public:
 double deg2rad(double deg) {
   return (deg * M_PI / 180);
 }
+
+class LinkedNode{
+
+		private:
+	double distance;
+	Node* neighbor;
+	LinkedNode* next;
+		public:
+	double getDistance();
+	Node* getNeighbor();
+	LinkedNode* getNext();
+	void setNext(LinkedNode* next);
+	LinkedNode(double distance, Node* neighbor, LinkedNode* next);
+};
+
 
 double getDist(double lat1d, double lon1d, double lat2d, double lon2d){
 
