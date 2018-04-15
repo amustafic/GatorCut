@@ -10,6 +10,28 @@
 #include "main.h"
 using namespace std;
 
+LinkedNode::LinkedNode(double distance, Node* neighbor, LinkedNode* next){
+this->distance = distance;
+this->neighbor = neighbor;
+this->next = next;
+}
+
+double LinkedNode::getDistance(){
+    return this->distance;
+}
+
+Node* LinkedNode::getNeighbor(){
+    return this->neighbor;
+}
+
+LinkedNode* LinkedNode::getNext(){
+    return this->next;
+}
+
+void LinkedNode::setNext(LinkedNode* next){
+    this->next = next;
+}
+
 Node::Node(double lon, double lat, string name, vector <Node*> neighbors, vector <double> distances){
 	this->lon=lon;
 	this->lat=lat;
@@ -97,11 +119,11 @@ bool locationNameExists(string checkCase, vector <Node*> locations){
 }
 
 int main(){
-
     vector <Node*> locations;//vector of node locations
     vector <string> temp;
     vector <string> token;
     vector <vector <int> > adjMatrix;
+    vector <LinkedNode*> adjList;
     vector <Node*> neighborsPassToNode;
     vector <double> distancesPassToNode;
     int lines = 0;
@@ -192,6 +214,36 @@ for(int i = 0; i < lines; i++){
     }
 
 }
+
+LinkedNode* emptyLink;
+LinkedNode* tempLink;
+
+for(int i = 0; i < locations.size(); i++){
+        for (int j = 0; j < locations[i]->getNeighbors().size(); ++j)
+        {
+           if(j==0){
+                adjList.push_back(new LinkedNode(locations[i]->getDistances()[j], locations[i]->getNeighbors()[j], emptyLink));
+                tempLink = adjList[i];
+            }
+            else{
+                tempLink->setNext(new LinkedNode(locations[i]->getDistances()[j], locations[i]->getNeighbors()[j], emptyLink));
+            }
+        }
+}
+/*
+//tests adjList
+for(int i = 0; i < adjList.size(); i++){
+    tempLink = adjList[i];
+        for (int j = 0; j < locations[i]->getNeighbors().size(); ++j)
+        {
+            cout << locations[i]->getName() << endl;
+            cout << "   Neighbor: " << tempLink->getNeighbor()->getName() << endl; 
+            cout << "       Distance: " << tempLink->getDistance() << endl;
+            tempLink = tempLink->getNext();
+            
+        }
+}*/
+
 //prints neighbors
 /*for(int i=0;i<lines;i++)  
     {
@@ -201,8 +253,6 @@ for(int i = 0; i < lines; i++){
         } 
     }
 */
-
-cout << "\n\n" << getDist(29.64780, -82.34256, 29.65150, -82.34383) << "\n\n\n";
 
 
 
