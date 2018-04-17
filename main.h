@@ -1,3 +1,11 @@
+//
+// Created by Asia Clifford on 4/15/18.
+//
+
+#ifndef DIJKSTRAALGORITHM_MAIN_H
+#define DIJKSTRAALGORITHM_MAIN_H
+
+#endif //DIJKSTRAALGORITHM_MAIN_H
 #include <string>
 #include <math.h>
 #include <cmath>
