@@ -1,0 +1,15 @@
+MENU:
+What is your location?
+INPUT //Name of the building
+Where do you want to get?
+INPUT //Name of the building
+Do you want to stop by to get food?
+INPUT //YES or NO
+OUTPUT:
+Distance between PLACE1 and PLACE2 is:____
+You need to go to BUILDING1 and then to BUILDING2...
+//food part
+If you are walking you will need __ minutes to get there.
+If you are riding a bike you will need __ minutes to get there.
+If you are skateboarding you will need __ minutes to get there.
+ 
